@@ -1,0 +1,185 @@
+:root {
+  --primary-color: #302AE6;
+  --secondary-color: #536390;
+  --font-color: #000000;
+  --bg-color: #fff;
+  --heading-color: #292922;
+  --elevated-color: #CDCDCD;
+}
+
+[data-theme="dark"] {
+  --primary-color: #9A97F3;
+  --secondary-color: #818cab;
+  --font-color: #FFFFFF;
+  --bg-color: #161625;
+  --heading-color: #818cab;
+  --elevated-color: #292944;
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+.link {
+  text-decoration: none;
+}
+
+.heading {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 35px;
+  color: var(--font-color);
+  opacity: 100%;
+  float: left;
+  margin-left: 50%;
+  font-family: "Muli";
+}
+
+.divider {
+  position: absolute;
+  margin-top: 3.5em;
+  left: 50%;
+  margin-left: -40em;
+  height: 0.2em;
+  width: 80em;
+  background-color: var(--font-color);
+}
+
+.content {
+  padding-top: 5em;
+}
+
+.icon {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.item {
+  background-color: var(--elevated-color);
+  float: left;
+  border-left-style: groove;
+  border-top-left-radius: 1em;
+  border-bottom-left-radius: 1em;
+  border-left-width: 10px;
+  border-left-color: var(--font-color);
+
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-right-width: 0px;
+  border-right-color: var(--bg-color);
+
+  width: 25%;
+  height: 30em;
+  margin-left: 6%;
+}
+
+.item-heading {
+  text-align: center;
+  color: var(--font-color);
+  margin-top: 0.5em;
+  font-size: 2em;
+  font-family: "Muli";
+  text-decoration: none;
+}
+
+.linker {
+  /*width: 100%;
+  height: 100%;*/
+}
+/* Slider Design */
+#dark-mode-text {
+  padding-left: 1px;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: var(--font-color);
+  font-family: "Muli", extra-light;
+}
+
+.theme-switch-wrapper {
+  padding-top: 5px;
+  float: right;
+  display: flex;
+  align-items: center;
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
+}
+
+input:checked+.slider {
+  background-color: #66bb6a;
+}
+
+input:checked+.slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+
+
+auswertung:
+  SETB P2.7            ; Motor anschalten
+loop:                  ; Endlosschleife
+  CLR C                ; Carry-Bit löschen, damit saubere Rechnung
+  MOV A, P2            ; Sensor 2 in Akku laden
+  SUBB A, P1           ; Sensor 1 von Sensor 2 abziehen
+  CJNE A, #0x00, end   ; Falls 0 Ende
+  JB ACC.7, links      ; Falls Negativ zu Links springen
+rechts:
+  SETB P1.7            ; Motor auf Rechts
+  JMP loop             ; Endlosschleife
+links:
+  CLR P1.7             ; Motor auf Links
+  JMP loop             ; Endlosschleife
+end:                   ; Einsprungadresse Ende
+  CLR P2.7             ; Motor aus
+RET                    ; Ende Unterprogramm
+
+JMP init               ; Übersprung der Interrupt-Adressen
+...
+init:                  ; Einsprungadresse Init-Block
+MOV TMOD, #01100001b   ; Timer 0 auf 16-Bit / Timer 1 auf Counter 8B-Auto-Reload
+SETB ET0               ; Timer 0 aktivieren
+SETB ET1               ; Timer 1 aktivieren
+MOV TH0, #0x3C         ; 2^16 = 65536 - 50000 = 15536 = 3CB0
+MOV TL0, #0xB0         ; 50MS Timer
+MOV TH1, #0x37         ; 200 Durchläufe ALSO 255 - 200 = 55 = 37
+MOV TL1, #0x37         ; 200 * 50MS = 10 Sekunden Pause
+SETB EA                ; Alle Interrupts aktivieren
