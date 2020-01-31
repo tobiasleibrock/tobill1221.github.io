@@ -1,5 +1,5 @@
-let full_width = 800;
-let full_height = 800;
+let full_width;
+let full_height;
 let block_width, block_height;
 let head, food;
 let direction = "up";
@@ -9,8 +9,13 @@ let movements = [];
 let length = 0;
 
 function setup() {
+  //full_width = window.innerWidth;
+  //full_height = window.innerHeight;
+  full_width = 600;
+  full_height = 600;
   frameRate(8);
-  createCanvas(full_width, full_height);
+  let cnv = createCanvas(full_width, full_height);
+  cnv.position(window.innerWidth / 2 - full_width / 2, window.innerHeight / 2 - full_height / 2);
   setParameters();
   head = new Head();
   food = new Food();
@@ -35,7 +40,7 @@ function collisionCheck() {
   }
   for (let i = 0; i < head.tail.length; i++) {
     if (head.x == head.tail[i].x && head.y == head.tail[i].y) {
-      loss = 1; 
+      loss = 1;
     }
   }
   if (loss == 1) {
@@ -169,24 +174,4 @@ class Food {
     fill(255, 0, 0);
     rect(this.x, this.y, block_width, block_height);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
